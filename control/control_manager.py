@@ -10,7 +10,7 @@ METRICS_UNITS = True
 def control_manager():
 
     while True:
-        humidity, temp_c = Adafruit_DHT.read_retry(Adafruit_DHT.DHT22, 4)
+        humidity, temp_c = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, 4)
 
         if(METRICS_UNITS):
             print(SENSOR_LOCATION_NAME + " Temperature(C)", temp_c)
