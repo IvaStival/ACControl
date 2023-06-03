@@ -1,2 +1,4 @@
+from control.control_manager import control_manager
+
 if __name__ == "__main__":
-    print("Hello World!")
+    control_manager()
