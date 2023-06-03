@@ -5,7 +5,7 @@ SENSOR_LOCATION_NAME = "SERVER"
 BUCKET_NAME = 'Server Room Temperatures'
 BUCKET_KEY = 'rt0129'
 MINUTES_BETWEEN_READS = 0.5
-METRICS_UNITS = False
+METRICS_UNITS = True
 
 def control_manager():
 
