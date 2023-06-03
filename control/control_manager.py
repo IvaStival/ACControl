@@ -14,6 +14,7 @@ def control_manager():
 
         if(METRICS_UNITS):
             print(SENSOR_LOCATION_NAME + " Temperature(C)", temp_c)
+            print(SENSOR_LOCATION_NAME + " Humidity", humidity)
         else:
             temp_f = format(temp_c * 9.0 / 5.0 + 32.0, ".2f")
             print(temp_f)
