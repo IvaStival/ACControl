@@ -1,23 +1,34 @@
-# import yaml
+import Adafruit_DHT
 
 
 class controlDHT22:
-    def __init__(self, minutes_between_reads, port, unit) -> None:
-        self.min = minutes_between_reads
+    def __init__(self, port, unit, name, debug) -> None:
         self.port = port
-        self.unit = unit
+        self.metric = unit
+        self.name = name
+        self.debug = debug
 
         print(self.min, self.port, self.unit)
 
-    # def run():
-        # while True:
-    #     humidity, temp_c = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, 4)
+    def run(self):
+        result = {}
+        humidity, temp_c = Adafruit_DHT.read_retry(
+            Adafruit_DHT.DHT11, self.port)
 
-    #     if(METRICS_UNITS):
-    #         print(SENSOR_LOCATION_NAME + " Temperature(C)", temp_c)
-    #         print(SENSOR_LOCATION_NAME + " Humidity", humidity)
-    #     else:
-    #         temp_f = format(temp_c * 9.0 / 5.0 + 32.0, ".2f")
-    #         print(temp_f)
+        result['humidity'] = humidity
 
-    #     time.sleep(60*MINUTES_BETWEEN_READS)
+        if (self.metric):
+            if self.debug:
+                print(self.name + " Temperature(C)", temp_c)
+                print(self.name + " Humidity", humidity)
+
+            result['temperature'] = temp_c
+
+        else:
+            if self.debug:
+                print(temp_f)
+
+            temp_f = format(temp_c * 9.0 / 5.0 + 32.0, ".2f")
+            result['temperature'] = temp_f
+
+        return result
