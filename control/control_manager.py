@@ -16,8 +16,6 @@ def control_manager():
     with open('./config/config.yaml', 'r') as file:
         config = yaml.safe_load(file)
 
-    print(config)
-
     minutes_between_reads = config["TEMPERATURE_SERVER"]["MINUTES_BETWEEN_READS"]
     unit_type = config["TEMPERATURE_SERVER"]["METRICS_UNIT"]
 
