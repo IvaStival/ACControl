@@ -18,7 +18,14 @@ def control_manager():
 
     print(config)
 
-    sensor_DHT22_01 = controlDHT22(12, 12, 1)
+    minutes_between_reads = config["TEMPERATURE_SERVER"]["MINUTES_BETWEEN_READS"]
+    unit_type = config["TEMPERATURE_SERVER"]["METRICS_UNIT"]
+
+    dh22_01_port = config["TEMPERATURE_SENSOR_01"]["PORT"]
+    dh22_02_port = config["TEMPERATURE_SENSOR_02"]["PORT"]
+
+    sensor_DHT22_01 = controlDHT22(
+        minutes_between_reads, dh22_01_port, unit_type)
     # while True:
     #     humidity, temp_c = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, 4)
 

@@ -7,6 +7,8 @@ class controlDHT22:
         self.port = port
         self.unit = unit
 
+        print(self.min, self.port, self.unit)
+
     # def run():
         # while True:
     #     humidity, temp_c = Adafruit_DHT.read_retry(Adafruit_DHT.DHT11, 4)
