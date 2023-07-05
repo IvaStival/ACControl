@@ -2,7 +2,7 @@ import Adafruit_DHT
 
 
 class controlDHT22:
-    def __init__(self, port, unit, name, debug) -> None:
+    def __init__(self, port, unit, name, debug=False) -> None:
         self.port = port
         self.metric = unit
         self.name = name

@@ -35,6 +35,7 @@ def control_manager():
         if (debug):
             print(temperature_server_name)
 
-        sensor_DHT22_01 = controlDHT22(dh22_01_port, unit_type, dh22_01_name)
+        sensor_DHT22_01 = controlDHT22(
+            dh22_01_port, unit_type, dh22_01_name, debug)
 
         time.sleep(60*minutes_between_reads)
