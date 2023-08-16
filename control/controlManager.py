@@ -35,5 +35,5 @@ def controlManager():
 
         result[dh22_01_name] = sensor_DHT22_01.run()
         print(result)
-
+        print(60*minutes_between_reads)
         time.sleep(60*minutes_between_reads)
