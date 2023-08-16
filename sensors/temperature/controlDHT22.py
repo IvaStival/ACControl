@@ -1,6 +1,7 @@
 import Adafruit_DHT
 
 
+# CLASS CONTROL
 class controlDHT22:
     def __init__(self, port, unit, name, debug=False) -> None:
         self.port = port
