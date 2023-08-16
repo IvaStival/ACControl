@@ -1,7 +1,7 @@
 import time
 import yaml
 
-from sensors.temperature.controlDHT11 import controlDHT11
+from sensors.temperature.controlDHT22 import controlDHT22
 
 
 def control_manager():
@@ -22,7 +22,7 @@ def control_manager():
     dh22_01_port = config["TEMPERATURE_SENSOR_01"]["PORT"]
     dh22_02_port = config["TEMPERATURE_SENSOR_02"]["PORT"]
 
-    sensor_DHT22_01 = controlDHT11(
+    sensor_DHT22_01 = controlDHT22(
         dh22_01_port, unit_type, dh22_01_name, debug)
 
     if (debug):
