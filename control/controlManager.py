@@ -4,7 +4,7 @@ import yaml
 from sensors.temperature.controlDHT22 import controlDHT22
 
 
-def control_manager():
+def controlManager():
 
     with open('./config/config.yaml', 'r') as file:
         config = yaml.safe_load(file)
