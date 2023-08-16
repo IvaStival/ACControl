@@ -17,8 +17,7 @@ class controlDHT22:
 
         if (self.metric):
             if self.debug:
-                print(self.name + " Temperature(C)", temp_c)
-                print(self.name + " Humidity", humidity)
+                print(f"{self.name} Temperature(C):{temp_c} Humidity:{humidity}")
 
             result['temperature'] = temp_c
 

@@ -1,4 +1,4 @@
-from control.control_manager import control_manager
+from control.controlManager import controlManager
 
 if __name__ == "__main__":
-    control_manager()
+    controlManager()

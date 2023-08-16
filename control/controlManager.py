@@ -1,13 +1,7 @@
 import time
 import yaml
 
-from sensors.temperature.controlDHT22 import controlDHT22
-
-SENSOR_LOCATION_NAME = "SERVER"
-BUCKET_NAME = 'Server Room Temperatures'
-BUCKET_KEY = 'rt0129'
-MINUTES_BETWEEN_READS = 0.5
-METRICS_UNITS = True
+from sensors.temperature.controlDHT11 import controlDHT11
 
 
 def control_manager():
@@ -28,17 +22,18 @@ def control_manager():
     dh22_01_port = config["TEMPERATURE_SENSOR_01"]["PORT"]
     dh22_02_port = config["TEMPERATURE_SENSOR_02"]["PORT"]
 
-    sensor_DHT22_01 = controlDHT22(
+    sensor_DHT22_01 = controlDHT11(
         dh22_01_port, unit_type, dh22_01_name, debug)
 
     if (debug):
         print(serve_name)
 
+    result = {}
     while True:
         if (debug):
             print(temperature_server_name)
 
-        result = sensor_DHT22_01.run()
+        result[dh22_01_name] = sensor_DHT22_01.run()
         print(result)
 
         time.sleep(60*minutes_between_reads)
