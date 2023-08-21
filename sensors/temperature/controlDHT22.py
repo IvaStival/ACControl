@@ -12,7 +12,7 @@ class controlDHT22:
     def run(self):
         result = {}
         humidity, temp_c = Adafruit_DHT.read_retry(
-            Adafruit_DHT.DHT22, self.port)
+            Adafruit_DHT.DHT11, self.port)
 
         result['humidity'] = humidity
 
