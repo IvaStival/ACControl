@@ -17,14 +17,12 @@ class controlLCD:
             for word in content_line1:
                 self.lcd.write_string(word)
                 self.lcd.cursor_pos = (0, len(word)+1)
-                sleep(0.5)
 
         if (content_line2):
             self.lcd.cursor_pos = (1, 0)
             for word in content_line2:
                 self.lcd.write_string(word)
                 self.lcd.cursor_pos = (1, len(word)+1)
-                sleep(0.5)
 
     def clear(self):
         self.lcd.clear()
