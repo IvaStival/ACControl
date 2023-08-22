@@ -46,8 +46,12 @@ class controlManager:
                 print(self.temperature_server_name)
 
             result[self.dh22_01_name] = self.sensor_DHT22_01.run()
-            print(result)
-            {'DHT22_01': {'humidity': 93.0, 'temperature': 20.0}}
+
+            # GET TEMPERATURE AND HUMIDITY OF SENSOR 1
+            t1 = result['DHT22_01']['temperature']
+            h1 = result['DHT22_01']['humidity']
+            print(f"T1:{t1}")
+            print(f"H1:{h1}")
             # time.sleep(60*minutes_between_reads)
-            self.lcd_control.write(
-                [f"T1:{result['DHT22_01']['temperature']}"], [f"H1:{result['DHT22_01']['humidity']}"])
+
+            self.lcd_control.write([f"T1:{t1}"], [f"H1:{h1}"])

@@ -12,17 +12,15 @@ class controlLCD:
 
     # WE MUST PASS THE STRINGS INSIDE A LIST: ["T1:20", "T2:10"]
     def write(self, content_line1=None, content_line2=None):
-
+        self.clear()
         if (content_line1):
-            self.clear()
-            self.lcd.cursor_pos = (0, 0)
+
             for word in content_line1:
                 self.lcd.write_string(word)
                 self.lcd.cursor_pos = (0, len(word)+1)
                 sleep(0.5)
 
         # if (content_line2):
-        #     self.clear()
         #     self.lcd.cursor_pos = (1, 0)
         #     for word in content_line2:
         #         self.lcd.write_string(word)
