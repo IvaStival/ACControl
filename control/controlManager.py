@@ -50,8 +50,5 @@ class controlManager:
             # GET TEMPERATURE AND HUMIDITY OF SENSOR 1
             t1 = result['DHT22_01']['temperature']
             h1 = result['DHT22_01']['humidity']
-            print(f"T1:{t1}")
-            print(f"H1:{h1}")
             # time.sleep(60*minutes_between_reads)
-
             self.lcd_control.write([f"T1:{t1}"], [f"H1:{h1}"])
