@@ -1,4 +1,5 @@
 from RPLCD import CharLCD
+import RPi.GPIO as GPIO
 
 GPIO.setmode(GPIO.BOARD)
 
