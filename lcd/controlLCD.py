@@ -7,7 +7,6 @@ class controlLCD:
         self.lcd = CharLCD(numbering_mode=GPIO.BOARD, cols=16, rows=2,
                            pin_rs=m_pin_rs, pin_e=m_pin_e, pins_data=m_pins_data)
 
-        GPIO.cleanup()
         self.lcd.write_string(u"ACControl Ready")
 
     # WE MUST PASS THE STRINGS INSIDE A LIST: ["T1:20", "T2:10"]
@@ -26,7 +25,6 @@ class controlLCD:
                 self.lcd.cursor_pos = (1, len(word)+1)
 
     def clear(self):
-        GPIO.cleanup()
         self.lcd.clear()
 
     def set_cursor_position(self, row, col):

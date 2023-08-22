@@ -1,4 +1,5 @@
 from control.controlManager import controlManager
 
 if __name__ == "__main__":
-    controlManager()
+    manager = controlManager()
+    manager.run()
