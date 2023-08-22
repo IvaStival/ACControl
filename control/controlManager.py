@@ -2,7 +2,7 @@ import time
 import yaml
 
 from sensors.temperature.controlDHT22 import controlDHT22
-from lcd.lcdControl import LCDControl
+from lcd.controlLCD import controlLCD
 
 
 class controlManager:
@@ -34,7 +34,7 @@ class controlManager:
         pins_data = config["LCD"]["PINS_DATA"]
 
         # INITIALIZE LCD CONTROL
-        self.lcd_control = LCDControl(pin_rs, pin_e, pins_data)
+        self.lcd_control = controlLCD(pin_rs, pin_e, pins_data)
 
         if (self.debug):
             print(self.serve_name)
