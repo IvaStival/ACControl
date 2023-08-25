@@ -15,7 +15,7 @@ TEMPERATURE_SENSOR_01:
 
 TEMPERATURE_SENSOR_02:
   NAME: "DHT22_02"
-  PORT: 5
+  PORT: 3
 
 VOLTAGE_SERVER:
   BUKET_NAME: "Voltage Server Control"
@@ -28,3 +28,10 @@ LCD:
   PIN_RS: 37
   PIN_E: 35
   PINS_DATA: [33, 31, 29, 23]
+
+DB:
+  USER: "rv"
+  PASSWORD: "narsil"
+  HOST: "localhost"
+  PORT: 3306
+  DBNAME: "accontrol"
