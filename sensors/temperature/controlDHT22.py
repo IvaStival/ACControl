@@ -1,6 +1,5 @@
 import Adafruit_DHT
 
-
 # CLASS CONTROL
 class controlDHT22:
     def __init__(self, port, unit, name, debug=False) -> None:
@@ -18,7 +17,7 @@ class controlDHT22:
 
         if (self.metric):
             if self.debug:
-                print(f"{self.name} Temperature(C):{temp_c} Humidity:{humidity}")
+                print(f"[TEMPERATURE]{self.name} Temperature(C):{temp_c} Humidity:{humidity}")
 
             result['temperature'] = temp_c
 

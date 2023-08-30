@@ -1,4 +1,5 @@
 import yaml
+import time
 from lcd.controlLCD import controlLCD
 from db.dbCommands import dbCommands
 
@@ -25,6 +26,10 @@ class screenControl:
         self.db_command = dbCommands(self.user, self.password, self.host, self.port, self.db_name)
 
     def run(self):
-        result = self.db_command.getLast(table='sensors')
-        for (id, t1, h1, t2, h2, create_at) in result:
-            self.lcd_control.write([f"T1:{t1}", f"T2:{t2}"], [f"H1:{h1}", f"H2:{h2}"]),
+        while True:
+            result = self.db_command.getLast(table='sensors')
+            
+            for (id, s1, t1, h1, s2, t2, h2, create_at) in result:
+                self.lcd_control.write([f"T1:{t1}", f"T2:{t2}"], [f"H1:{h1}", f"H2:{h2}"]),
+
+            time.sleep(2)
