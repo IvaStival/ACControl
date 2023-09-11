@@ -29,6 +29,18 @@ class dbCommands:
         command = f"INSERT INTO sensors (s1, t1, h1, s2, t2, h2) VALUES (%s, %s, %s, %s, %s, %s)"
         self.connection.query(command, (s1, t1, h1, s2, t2, h2))
 
+    # IN THIS INSERT WE'LL RECEIVE A STRUCTURE LIKE THIS:
+    # {'s1': '<sensor_name>', t1: 30, h1: 70, s2: '<sensor_name>', ...}
+    def insert(self, data):
+        keys = tuple(data.keys())
+        variable_names = ', '.join(keys)
+        n_percent_s = '%s,' *  len(data)
+        values = tuple(data.values())
+
+        command = f"INSERT INTO sensors ({variable_names}) VALUES ({n_percent_s[:-1]})"
+        self.connection.query(command, values)
+
+
     def getAll(self, table):
         command = f"SELECT * FROM {table}"
         return self.connection.query(command)

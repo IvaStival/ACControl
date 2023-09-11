@@ -6,7 +6,7 @@ DANGER_TEMPERATURE=35
 NUM_ELEMENTS=5
 
 ## TEST ONLY - REMOVE IT
-UP_TEMPERATURE=0
+UP_TEMPERATURE=20
 
 class temperatureSystem:
     def __init__(self, connection):

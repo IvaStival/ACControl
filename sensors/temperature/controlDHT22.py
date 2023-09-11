@@ -28,4 +28,6 @@ class controlDHT22:
             temp_f = format(temp_c * 9.0 / 5.0 + 32.0, ".2f")
             result['temperature'] = temp_f
 
+        result["name"] = self.name
+
         return result

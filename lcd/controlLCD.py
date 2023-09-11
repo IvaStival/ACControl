@@ -7,7 +7,8 @@ class controlLCD:
     def __init__(self, m_pin_rs, m_pin_e, m_pins_data):
         self.lcd = CharLCD(numbering_mode=GPIO.BOARD, cols=16, rows=2,
                            pin_rs=m_pin_rs, pin_e=m_pin_e, pins_data=m_pins_data)
-
+        self.lcd.clear()
+        sleep(1)
         self.lcd.write_string(u"ACControl Ready")
 
     # WE MUST PASS THE STRINGS INSIDE A LIST: ["T1:20", "T2:10"]
