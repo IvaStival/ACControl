@@ -1,8 +1,9 @@
 from control.controlManager import controlManager
-
+# from security.comunicationSystem import comunicationSystem
 import time
 
 if __name__ == "__main__":
+    # comunication = comunicationSystem()
     manager = controlManager()
     manager.run()
     # # user, password, host, port, database

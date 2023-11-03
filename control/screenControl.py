@@ -9,12 +9,17 @@ class screenControl:
             config = yaml.safe_load(file)
 
         #### LCD CONFIG DATA ####
-        pin_rs = config["LCD"]["PIN_RS"]
-        pin_e = config["LCD"]["PIN_E"]
-        pins_data = config["LCD"]["PINS_DATA"]
+        address = config["LCD"]["ADDRESS"]
+        port = config["LCD"]["PORT"]
+        charmap = config["LCD"]["CHARMAP"]
+        cols = config["LCD"]["COLS"]
+        rows = config["LCD"]["ROWS"]
+        i2c_expander = config["LCD"]["I2C_EXPANDER"]
+
+        
 
         #INITIALIZE LCD CONTROL
-        self.lcd_control = controlLCD(pin_rs, pin_e, pins_data)
+        self.lcd_control = controlLCD(address, port, charmap, cols, rows, i2c_expander)
 
         #### DB CONFIG DATA ####
         self.user = config["DB"]["USER"]
