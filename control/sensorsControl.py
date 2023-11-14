@@ -22,15 +22,8 @@ class sensorControl:
             instance = controlDHT22(sensor["PORT"], self.unit_type, sensor["NAME"], sensor["DEBUG"])
             self.sensor_instances.append(instance)
 
-        
-        #### DB CONFIG DATA ####
-        self.user = config["DB"]["USER"]
-        self.password = config["DB"]["PASSWORD"]
-        self.host = config["DB"]["HOST"]
-        self.port = config["DB"]["PORT"]
-        self.db_name = config["DB"]["DBNAME"]
-
-        self.db_command = dbCommands(self.user, self.password, self.host, self.port, self.db_name)
+        # DB CONNECTION
+        self.db_command = dbCommands()
 
         # CREATE TABLE IF DOESN'T EXISTS
         self.db_command.createTable()

@@ -21,14 +21,15 @@ class screenControl:
         #INITIALIZE LCD CONTROL
         self.lcd_control = controlLCD(address, port, charmap, cols, rows, i2c_expander)
 
-        #### DB CONFIG DATA ####
-        self.user = config["DB"]["USER"]
-        self.password = config["DB"]["PASSWORD"]
-        self.host = config["DB"]["HOST"]
-        self.port = config["DB"]["PORT"]
-        self.db_name = config["DB"]["DBNAME"]
+        # #### DB CONFIG DATA ####
+        # self.user = config["DB"]["USER"]
+        # self.password = config["DB"]["PASSWORD"]
+        # self.host = config["DB"]["HOST"]
+        # self.port = config["DB"]["PORT"]
+        # self.db_name = config["DB"]["DBNAME"]
 
-        self.db_command = dbCommands(self.user, self.password, self.host, self.port, self.db_name)
+        # self.db_command = dbCommands(self.user, self.password, self.host, self.port, self.db_name)
+        self.db_command = dbCommands()
 
     def run(self):
         while True:

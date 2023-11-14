@@ -9,6 +9,9 @@ class ExternalComunicationSystem:
         token = config["TELEGRAM"]["TOKEN"]
         self.chat_id = config["TELEGRAM"]["CHATGROUPID"]
         self.bot = telebot.TeleBot(token)
+
+        self.danger_temp = config["TEMPERATURE_SERVER"]["DANGER_TEMP"]
+        self.warning_temp = config["TEMPERATURE_SERVER"]["WARNING_TEMP"]
     
         @self.bot.message_handler(commands=['start'])
         def send_welcome(message):
@@ -24,7 +27,7 @@ class ExternalComunicationSystem:
         self.bot.send_message(self.chat_id, message)
 
     def warningMessage(self, message):
-        self.sendMessage(f"⚠️ [WARNING] - {message}")
+        self.sendMessage(f"⚠️ [WARNING] - {message}\n\nTemperature above {self.warning_temp}°C!!!")
 
     def dangerMessage(self, message):
-        self.sendMessage(f"‼️🔥🚒 [DANGER] - {message}")
+        self.sendMessage(f"‼️🔥🚒 [DANGER] - {message}\n\nTemperature above {self.danger_temp}°C!!!")

@@ -1,14 +1,18 @@
+import yaml
 import mariadb
 import sys
 
 class dbConnection:
-    def __init__(self, user, password, host, port, database):
+    def __init__(self):
+        with open('./config/config.yaml', 'r') as file:
+            config = yaml.safe_load(file)
 
-        self.user = user
-        self.password = password
-        self.host = host
-        self.port = port
-        self.database = database
+        #### DB CONFIG DATA ####
+        self.user = config["DB"]["USER"]
+        self.password = config["DB"]["PASSWORD"]
+        self.host = config["DB"]["HOST"]
+        self.port = config["DB"]["PORT"]
+        self.db_name = config["DB"]["DBNAME"]
 
     def connect(self):
         
@@ -17,7 +21,7 @@ class dbConnection:
                                         password=self.password, 
                                         host=self.host, 
                                         port=self.port, 
-                                        database=self.database)
+                                        database=self.db_name)
     
             self.conn.autocommit = True
             self.cur = self.conn.cursor()

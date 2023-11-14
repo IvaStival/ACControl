@@ -6,7 +6,6 @@ import RPi.GPIO as GPIO
 class piGPIOSystem:
     def __init__(self):
         GPIO.setwarnings(False)
-        
 
         with open('./config/config.yaml', 'r') as file:
             config = yaml.safe_load(file)

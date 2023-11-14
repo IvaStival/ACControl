@@ -24,11 +24,11 @@ class securityControl:
         GPIO.setmode(GPIO.BCM)
 
         #### DB CONFIG DATA ####
-        user = config["DB"]["USER"]
-        password = config["DB"]["PASSWORD"]
-        host = config["DB"]["HOST"]
-        port = config["DB"]["PORT"]
-        db_name = config["DB"]["DBNAME"]
+        # user = config["DB"]["USER"]
+        # password = config["DB"]["PASSWORD"]
+        # host = config["DB"]["HOST"]
+        # port = config["DB"]["PORT"]
+        # db_name = config["DB"]["DBNAME"]
         
         ## ----------------- SECURITY CONTROL VARIABLES --------------------
         ### ARRAY USED TO ENABLE ALERT SYSTEM TO TURN ON GPIOS AND SEND MESSAGE ALERT
@@ -49,7 +49,7 @@ class securityControl:
         ## -----------------------------------------------------------------
 
         ### DATA BASE ACCESS CLASS ###
-        self.db_command = dbCommands(user, password, host, port, db_name)
+        self.db_command = dbCommands()
 
         ### TEMPERATURE SYSTEM ###
         self.tempSystem = TemperatureSystem(self.db_command)
@@ -83,10 +83,12 @@ class securityControl:
 
     def run(self):
          while True:
+            # GET LAST DATABASE TEMPERATURE ACQUIRED
             result = self.tempSystem.temperatureCheck()
             self.message_queue = []
 
-            for id, (sensor_name, status_code) in enumerate(result):
+            ## LOOP FOR ALL SENSORS CHECK
+            for id, (sensor_name, temp, status_code) in enumerate(result):
                 if status_code == statusCode.OK_WAINTING:
                     if(self.debug):
                         print(f"[CODE {status_code}] {sensor_name} - Waiting for more data")
@@ -104,13 +106,13 @@ class securityControl:
                     # self.gpio_command.turnOnTempWarning()
                     self.temp_warning_list[id] = 1
                     if(self.debug):
-                        print(f"[CODE {status_code}] {sensor_name} - WARNING! Temperature is HIGH.") 
+                        print(f"[CODE {status_code}] {sensor_name} - WARNING! Temperature is HIGH. {temp} degrees") 
                 
                 elif status_code == statusCode.DANGER_TEMPERATURE:
                     # self.gpio_command.turnOnTempDanger()
                     self.temp_danger_list[id] = 1
                     if(self.debug):
-                        print(f"[CODE {status_code}] {sensor_name} - DANGER! Temperature is VERY HIGH.")
+                        print(f"[CODE {status_code}] {sensor_name} - DANGER! Temperature is VERY HIGH. {temp} degrees")
                 elif status_code == statusCode.SENSOR_OK:
                     self.sensor_alert_list[id] = 0
                     self.temp_warning_list[id] = 0
