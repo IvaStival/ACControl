@@ -27,7 +27,7 @@ class ExternalComunicationSystem:
         self.bot.send_message(self.chat_id, message)
 
     def warningMessage(self, message):
-        self.sendMessage(f"⚠️ [WARNING] - {message}\n\nTemperature above {self.warning_temp}°C!!!")
+        self.sendMessage(f"⚠️ [WARNING] - {message}")
 
     def dangerMessage(self, message):
-        self.sendMessage(f"‼️🔥🚒 [DANGER] - {message}\n\nTemperature above {self.danger_temp}°C!!!")
+        self.sendMessage(f"‼️🔥🚒 [DANGER] - {message}")

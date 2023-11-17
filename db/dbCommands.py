@@ -23,6 +23,9 @@ class dbCommands:
 
     def createSummarizeTable(self):
         command = """CREATE TABLE IF NOT EXISTS summarize_sensor (id INT AUTO_INCREMENT PRIMARY KEY, 
+                                            year VARCHAR(10),
+                                            month VARCHAR(10),
+                                            day VARCHAR(10),
                                             s1 VARCHAR(100),
                                             t1 FLOAT, 
                                             h1 FLOAT, 
@@ -32,6 +35,8 @@ class dbCommands:
                                             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
                                             )"""
         
+
+        # CREATE TABLE IF NOT EXISTS summarize_sensor (id INT AUTO_INCREMENT PRIMARY KEY, year VARCHAR(10),month VARCHAR(10),day VARCHAR(10),s1 VARCHAR(100),t1 FLOAT, h1 FLOAT, s2 VARCHAR(100),t2 FLOAT, h2 FLOAT,created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)
         result = self.connection.query(command)
         
     def deleteTable(self):
@@ -69,9 +74,9 @@ class dbCommands:
         command = f"SELECT * FROM {table} ORDER BY created_at DESC LIMIT {n};"
         return self.connection.query(command)
 
-    def summarizeData(self, period, today):
+    def summarizeData(self, period, today, month):
     
-        select_command = f"SELECT  EXTRACT(year FROM created_at) as year, 
+        select_command = """SELECT  EXTRACT(year FROM created_at) as year, 
                             EXTRACT(month FROM created_at) as month, 
                             EXTRACT({period} FROM created_at) as {period}, 
                             s1,
@@ -80,18 +85,18 @@ class dbCommands:
                             s2,
                             avg(t2) as t2_avg,
                             avg(h2) as h2_avg
-                            from sensors where {period} != {today} 
-                            GROUP BY EXTRACT({period} FROM created_at);"
+                            from sensors where EXTRACT({period} FROM created_at) != {today} OR EXTRACT(month FROM created_at) != {month}
+                            GROUP BY EXTRACT({period} FROM created_at)"""
         
-        # select EXTRACT(year FROM created_at) as year, EXTRACT(month FROM created_at) as month, EXTRACT(day FROM created_at) as day, s1, avg(t1) as t1_avg, avg(h1) as h1_avg,s2, avg(t2) as t2_avg, avg(h2) as h2_avg from sensors where EXTRACT(day FROM created_at) != 14 GROUP BY EXTRACT(day FROM created_at) ORDER BY EXTRACT(month FROM created_at);
         # summarized_data = self.connection.query(command)
 
-        command = f"INSERT INTO summarize_sensor {select_command}"
+        # command = f"INSERT INTO summarize_sensor (year, month, day, s1, t1, h1, s2, t2, h2) SELECT EXTRACT(year FROM created_at) as year, EXTRACT(month FROM created_at) as month, EXTRACT({period} FROM created_at) as {period}, s1,avg(t1) as t1_avg,avg(h1) as h1_avg,s2,avg(t2) as t2_avg,avg(h2) as h2_avg from sensors where EXTRACT({period}} FROM created_at) != {today} OR EXTRACT(month FROM created_at) != {month} GROUP BY EXTRACT({period} FROM created_at)"
+        command = f"INSERT INTO summarize_sensor (year, month, day, s1, t1, h1, s2, t2, h2) {select_command}"
         self.connection.query(command)
 
-    def _deleteSummarizedData(self, today):
+    def _deleteSummarizedData(self, period, today, month):
 
-        command = f"DELETE FROM sensors WHERE id IN (SELECT id from sensors where EXTRACT(day FROM created_at) != {today}) as subquery;"
+        command = f"DELETE FROM sensors WHERE id IN (SELECT id from sensors where EXTRACT({today} FROM created_at) != 14 OR EXTRACT(month FROM created_at) != 11)"
         self.connection.query(command)
         
     def getByYear(self, table, yeay):

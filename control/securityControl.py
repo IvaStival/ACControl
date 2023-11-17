@@ -22,13 +22,6 @@ class securityControl:
         n_sensors = len(config['SENSORS']['TEMPERATURE_SENSOR'])
 
         GPIO.setmode(GPIO.BCM)
-
-        #### DB CONFIG DATA ####
-        # user = config["DB"]["USER"]
-        # password = config["DB"]["PASSWORD"]
-        # host = config["DB"]["HOST"]
-        # port = config["DB"]["PORT"]
-        # db_name = config["DB"]["DBNAME"]
         
         ## ----------------- SECURITY CONTROL VARIABLES --------------------
         ### ARRAY USED TO ENABLE ALERT SYSTEM TO TURN ON GPIOS AND SEND MESSAGE ALERT
@@ -60,6 +53,9 @@ class securityControl:
         ### EXTERNAL COMUNICATION SYSTEM ###
         self.comunication = ExternalComunicationSystem()
 
+        ## QUEUE OF MESSAGES TO SEND BY TELEGRAM
+        self.message_queue = []
+
     def alertMessageControl(self):
         if(self.send_alert_message):
             current_time = time.time()
@@ -85,34 +81,35 @@ class securityControl:
          while True:
             # GET LAST DATABASE TEMPERATURE ACQUIRED
             result = self.tempSystem.temperatureCheck()
-            self.message_queue = []
 
-            ## LOOP FOR ALL SENSORS CHECK
-            for id, (sensor_name, temp, status_code) in enumerate(result):
+            ## LOOP FOR ALL CHECKED SENSORS
+            for id, (sensor_name, temp, hum, status_code) in enumerate(result):
                 if status_code == statusCode.OK_WAINTING:
                     if(self.debug):
                         print(f"[CODE {status_code}] {sensor_name} - Waiting for more data")
-                
+                    continue
+
                 if status_code == statusCode.TEMPERATURE_SENSOR_ERROR:
-                    # self.gpio_command.turnOnTempSensorWarning()
                     self.sensor_alert_list[id] = 1
+                    self.message_queue.append([WARNING, self.sensor_problem_message])
                     if(self.debug):
                         print(f"[CODE {status_code}] {sensor_name} - Temperature Sensor Error. Data can't be readed.")
+                    continue
                 else:
-                    # self.gpio_command.turnOffTempSensorWarning()
                     self.sensor_alert_list[id] = 0
 
                 if status_code == statusCode.WARNING_TEMPERATURE:
-                    # self.gpio_command.turnOnTempWarning()
                     self.temp_warning_list[id] = 1
+                    self.message_queue.append([WARNING, self.temperature_warning_message + f"\n\nSensor: {sensor_name} \nTemperature: {temp}°C, Humidity: {hum}"])
                     if(self.debug):
-                        print(f"[CODE {status_code}] {sensor_name} - WARNING! Temperature is HIGH. {temp} degrees") 
-                
+                        print(f"[CODE {status_code}] {sensor_name} - WARNING! Temperature is HIGH. {temp} degrees")
+
                 elif status_code == statusCode.DANGER_TEMPERATURE:
-                    # self.gpio_command.turnOnTempDanger()
                     self.temp_danger_list[id] = 1
+                    self.message_queue.append([DANGER, self.temperature_danger_message + f"\n\nSensor: {sensor_name} \nTemperature: {temp}°C, Humidity: {hum} "])
                     if(self.debug):
                         print(f"[CODE {status_code}] {sensor_name} - DANGER! Temperature is VERY HIGH. {temp} degrees")
+
                 elif status_code == statusCode.SENSOR_OK:
                     self.sensor_alert_list[id] = 0
                     self.temp_warning_list[id] = 0
@@ -122,23 +119,20 @@ class securityControl:
                         print(f"[CODE {status_code}] {sensor_name} - Sensor is OK!")
 
             if(sum(self.sensor_alert_list)):
-                self.gpio_command.turnOnTempSensorWarning()
                 self.send_alert_message = True
-                self.message_queue.append([WARNING, self.sensor_problem_message])
+                self.gpio_command.turnOnTempSensorWarning()
             else:
                 self.gpio_command.turnOffTempSensorWarning()
 
             if(sum(self.temp_warning_list)):
                 self.send_alert_message = True
                 self.gpio_command.turnOnTempWarning()
-                self.message_queue.append([WARNING, self.temperature_warning_message])
             else:
                 self.gpio_command.turnOffTempWarning()
 
             if(sum(self.temp_danger_list)):
                 self.send_alert_message = True
                 self.gpio_command.turnOnTempDanger()
-                self.message_queue.append([DANGER, self.temperature_danger_message])
             else:
                 self.gpio_command.turnOffTempDanger()
 
