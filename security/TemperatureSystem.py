@@ -36,28 +36,24 @@ class TemperatureSystem:
             h_sensor2 = readed_temp[6]
 
             ## CHECK IF THERE IS A SENSOR DATA
-            if(not t_sensor1):
+            if(not t_sensor1 or not h_sensor1):
                 sensor1_status = SENSOR_OFF
-            elif(not h_sensor1):
-                sensor1_status = SENSOR_OFF
+            else:
+                ## CHECK IF THE TEMPERATURE IS BETWEEN WARINIG AND DANGE TEMPERATURE IF SO PLUS ONE TO THE COUNTER WARNING
+                if(t_sensor1 >= self.warning_temperature and t_sensor1 < self.danger_temperature):
+                    warning_counter_s1 += 1
+                ## ELSE ADD 1 TO DANGER COUNTER
+                elif(t_sensor1 >= self.danger_temperature):
+                    danger_counter_s1 += 1
 
-            if(not t_sensor2):
+            if(not t_sensor2 or not h_sensor2):
                 sensor2_status = SENSOR_OFF
-            elif(not h_sensor2):
-                sensor2_status = SENSOR_OFF
-
-            ## CHECK IF THE TEMPERATURE IS BETWEEN WARINIG AND DANGE TEMPERATURE IF SO PLUS ONE TO THE COUNTER WARNING
-            if(t_sensor1 >= self.warning_temperature and t_sensor1 < self.danger_temperature):
-                warning_counter_s1 += 1
-            ## ELSE ADD 1 TO DANGER COUNTER
-            elif(t_sensor1 >= self.danger_temperature):
-                danger_counter_s1 += 1
-
-            ## HERE IS THE SAME BUT TO SENSOR 2
-            if(t_sensor2 >= self.warning_temperature and t_sensor2 < self.danger_temperature):
-                warning_counter_s2 += 1
-            elif(t_sensor2 >= self.danger_temperature):
-                danger_counter_s2 += 1
+            else:
+                ## HERE IS THE SAME BUT TO SENSOR 2
+                if(t_sensor2 >= self.warning_temperature and t_sensor2 < self.danger_temperature):
+                    warning_counter_s2 += 1
+                elif(t_sensor2 >= self.danger_temperature):
+                    danger_counter_s2 += 1
         
         ## COUNTER CHECK
         # IN THIS PART WE WILL CHECK OUR COUNTERS
@@ -139,9 +135,7 @@ class TemperatureSystem:
             #         temp_check_result.append([name_sensor2, t_sensor2, statusCode.SENSOR_OK])
             
             # ## TODO
-            ## ADD THE VOLTAGE SENSOR CHECK
-
-            
+            ## ADD THE VOLTAGE SENSOR CHECK            
             result = self._temperatureStatus(temperature_data)
 
             s1_name = result[0][0]

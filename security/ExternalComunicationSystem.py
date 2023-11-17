@@ -26,6 +26,9 @@ class ExternalComunicationSystem:
     def sendMessage(self, message):
         self.bot.send_message(self.chat_id, message)
 
+    def okMessage(self, message):
+        self.sendMessage(f"✅ [OK] - {message}")
+
     def warningMessage(self, message):
         self.sendMessage(f"⚠️ [WARNING] - {message}")
 

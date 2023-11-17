@@ -9,8 +9,10 @@ from utils.piGPIOSystem import piGPIOSystem
 
 import RPi.GPIO as GPIO
 
-WARNING = 1
-DANGER = 2
+OK = 1
+WARNING = 2
+DANGER = 3
+
 
 class securityControl:
     def __init__(self):
@@ -30,13 +32,16 @@ class securityControl:
         self.temp_danger_list = [0] * n_sensors
 
         ### VARIABLE TO CONTROL EXTERNAL ALERT MESSAGES
+        self.ok_message = config["TELEGRAM"]["OK_MESSAGE"]
         self.sensor_problem_message = config["TELEGRAM"]["SENSOR_PROBLEM_MESSAGE"]
         self.temperature_warning_message = config["TELEGRAM"]["TEMPERATURE_WARNING_MESSAGE"]
         self.temperature_danger_message = config["TELEGRAM"]["TEMPERATURE_DANGER_MESSAGE"]
+        self.send_message_time = config["TELEGRAM"]["SEND_MESSAGE_TIME_MIN"]
 
         self.send_alert_message = False
         self.alert_message = ""
         self.sent_alert_message_time = 9999999999
+        self.problem_flag = False
 
         self.message_queue = []
         ## -----------------------------------------------------------------
@@ -53,18 +58,15 @@ class securityControl:
         ### EXTERNAL COMUNICATION SYSTEM ###
         self.comunication = ExternalComunicationSystem()
 
-        ## QUEUE OF MESSAGES TO SEND BY TELEGRAM
-        self.message_queue = []
-
-    def alertMessageControl(self):
+    def alertMessageControl(self, message_queue):
         if(self.send_alert_message):
             current_time = time.time()
             elapsed_time_in_min = int((current_time - self.sent_alert_message_time)/60)
 
-            if(elapsed_time_in_min >= 5 or elapsed_time_in_min < 0):
-                while len(self.message_queue):
+            if(elapsed_time_in_min >= self.send_message_time or elapsed_time_in_min < 0):
+                while len(message_queue):
                     
-                    message = self.message_queue.pop()
+                    message = message_queue.pop()
                     if(message[0] == WARNING):
                         if(self.debug):
                             print("[ALERT] - Send external WARNING alert")
@@ -73,14 +75,20 @@ class securityControl:
                         if(self.debug):
                             print("[ALERT] - Send external DANGER alert")
                         self.comunication.dangerMessage(message[1])
+                    if(message[0] == OK):
+                        if(self.debug):
+                            print("[ALERT] - Send external DANGER alert")
+                        self.comunication.okMessage(message[1])
                     time.sleep(1)
                 
                 self.sent_alert_message_time = time.time()
 
     def run(self):
-         while True:
+        while True:
             # GET LAST DATABASE TEMPERATURE ACQUIRED
             result = self.tempSystem.temperatureCheck()
+
+            message_queue = []
 
             ## LOOP FOR ALL CHECKED SENSORS
             for id, (sensor_name, temp, hum, status_code) in enumerate(result):
@@ -90,8 +98,9 @@ class securityControl:
                     continue
 
                 if status_code == statusCode.TEMPERATURE_SENSOR_ERROR:
+                    self.problem_flag = True
                     self.sensor_alert_list[id] = 1
-                    self.message_queue.append([WARNING, self.sensor_problem_message])
+                    message_queue.append([WARNING, self.sensor_problem_message])
                     if(self.debug):
                         print(f"[CODE {status_code}] {sensor_name} - Temperature Sensor Error. Data can't be readed.")
                     continue
@@ -99,18 +108,21 @@ class securityControl:
                     self.sensor_alert_list[id] = 0
 
                 if status_code == statusCode.WARNING_TEMPERATURE:
+                    self.problem_flag = True
                     self.temp_warning_list[id] = 1
-                    self.message_queue.append([WARNING, self.temperature_warning_message + f"\n\nSensor: {sensor_name} \nTemperature: {temp}°C, Humidity: {hum}"])
+                    message_queue.append([WARNING, self.temperature_warning_message + f"\n\nSensor: {sensor_name} \nTemperature: {temp}°C, Humidity: {hum}"])
                     if(self.debug):
                         print(f"[CODE {status_code}] {sensor_name} - WARNING! Temperature is HIGH. {temp} degrees")
 
                 elif status_code == statusCode.DANGER_TEMPERATURE:
+                    self.problem_flag = True
                     self.temp_danger_list[id] = 1
-                    self.message_queue.append([DANGER, self.temperature_danger_message + f"\n\nSensor: {sensor_name} \nTemperature: {temp}°C, Humidity: {hum} "])
+                    message_queue.append([DANGER, self.temperature_danger_message + f"\n\nSensor: {sensor_name} \nTemperature: {temp}°C, Humidity: {hum} "])
                     if(self.debug):
                         print(f"[CODE {status_code}] {sensor_name} - DANGER! Temperature is VERY HIGH. {temp} degrees")
 
                 elif status_code == statusCode.SENSOR_OK:
+                    
                     self.sensor_alert_list[id] = 0
                     self.temp_warning_list[id] = 0
                     self.temp_danger_list[id] = 0
@@ -143,13 +155,17 @@ class securityControl:
 
             
             if(not sum(self.sensor_alert_list) and not sum(self.temp_warning_list) and not sum(self.temp_danger_list)):
+                if self.problem_flag:
+                        message_queue.append([OK, self.ok_message])
+                
+                self.problem_flag = False
                 self.send_alert_message = False
                 self.sent_alert_message_time = 99999999
                 self.gpio_command.turnOnOkAlert()
             else:
                 self.gpio_command.turnOffOkAlert()
 
-            self.alertMessageControl()
+            self.alertMessageControl(message_queue)
             # f"We have a problem with our sensors:\n Sensor number {[i+1 for i, x in enumerate(self.sensor_alert_list) if x]}"
             
             time.sleep(10)
