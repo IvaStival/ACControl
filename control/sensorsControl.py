@@ -13,7 +13,7 @@ class sensorControl:
 
         #### TEMPERATURE CONFIG DATA ####
         self.unit_type = config["TEMPERATURE_SERVER"]["METRICS_UNIT"]
-        self.minutes_between_reads = config["TEMPERATURE_SERVER"]["MINUTES_BETWEEN_READS"]
+        self.seconds_between_reads = config["TEMPERATURE_SERVER"]["SECONDS_BETWEEN_READS"]
         
         self.sensor_list = config["SENSORS"]["TEMPERATURE_SENSOR"]
         
@@ -46,4 +46,4 @@ class sensorControl:
             self.db_command.insert(result)
             
             # TIME OUT
-            time.sleep(60*self.minutes_between_reads)
+            time.sleep(self.seconds_between_reads)

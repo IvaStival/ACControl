@@ -21,7 +21,7 @@ class TemperatureSystem:
         self.connection = connection
 
     ## THIS FUNCTION is USED TP CHECK NUM_ELEMENT TEMPERATURE BEFORE SEND A STATUS WARNING/DANGER ALERT
-    def _temperatureStatus(self, temperatures):
+    def _temperatureStatus(self, data):
         sensor1_status = 0
         sensor2_status = 0
         warning_counter_s1 = 0
@@ -29,7 +29,7 @@ class TemperatureSystem:
         warning_counter_s2 = 0
         danger_counter_s2 = 0
 
-        for readed_temp in temperatures:
+        for readed_temp in data:
             t_sensor1 = readed_temp[2] 
             h_sensor1 = readed_temp[3]
             t_sensor2 = readed_temp[5]
@@ -75,12 +75,12 @@ class TemperatureSystem:
             sensor2_status = DANGER
 
         ## HERE WE WILL RETURN THE LAST DATA INFORMATION THAT WE HAVE WITH THE STATUS
-        s1_name = temperatures[-1][1]
-        t1 = temperatures[-1][2]
-        h1 = temperatures[-1][3]
-        s2_name = temperatures[-1][4]
-        t2 = temperatures[-1][5]
-        h2 = temperatures[-1][6]
+        s1_name = data[-1][1]
+        t1 = data[-1][2]
+        h1 = data[-1][3]
+        s2_name = data[-1][4]
+        t2 = data[-1][5]
+        h2 = data[-1][6]
 
         return [(s1_name, t1, h1, sensor1_status), (s2_name, t2, h2, sensor2_status)]
     
