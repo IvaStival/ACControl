@@ -1,5 +1,6 @@
 import yaml
 import telebot
+import logging
 
 class ExternalComunicationSystem:
     def __init__(self):
@@ -12,6 +13,8 @@ class ExternalComunicationSystem:
 
         self.danger_temp = config["TEMPERATURE_SERVER"]["DANGER_TEMP"]
         self.warning_temp = config["TEMPERATURE_SERVER"]["WARNING_TEMP"]
+
+        self.log = logging.getLogger("root")
     
         @self.bot.message_handler(commands=['start'])
         def send_welcome(message):
@@ -27,10 +30,13 @@ class ExternalComunicationSystem:
         self.bot.send_message(self.chat_id, message)
 
     def okMessage(self, message):
+        self.log.info(f"Sending [OK] message - {message}")
         self.sendMessage(f"✅ [OK] - {message}")
 
     def warningMessage(self, message):
+        self.log.info(f"Sending [WARNING] message - {message}")
         self.sendMessage(f"⚠️ [WARNING] - {message}")
 
     def dangerMessage(self, message):
+        self.log.info(f"Sending [DANGER] message - {message}")
         self.sendMessage(f"‼️🔥🚒 [DANGER] - {message}")

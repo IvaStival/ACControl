@@ -1,0 +1,123 @@
+{% extends "layout.html" %} {% block content %}
+<script src="{{url_for('static', filename='js/external/Chart.bundle.min.js')}}"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<!-- <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active"><a href="{{ url_for('main') }}">Main screen</a></li>
+    </ol>
+</nav> -->
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <canvas id="lineChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+        var chart_data = {
+            labels: {{template_labels | tojson}},
+            datasets: [{
+                label: "S1 Temperature",
+                data: {{template_sensor1_temperature}},
+                backgroundColor: "#3399ff",
+                borderColor: "#3399ff",
+                fill: false,
+                borderWidth: 1.2,
+                pointRadius: 0,
+            },
+            {
+                label: "S2 Temperature",
+                data: {{template_sensor2_temperature}},
+                backgroundColor: "#000066",
+                borderColor: "#000066",
+                fill: false,
+                borderWidth: 1.2,
+                pointRadius: 0,
+            }]
+        }
+    
+    var cv = document.getElementById('lineChart')
+    var ctx = cv.getContext('2d');
+    var chart = new Chart(ctx, {
+        type: 'line',
+        data: chart_data,
+        options: {
+            title: {
+                display: true,
+                text: "Line chart with drilldowns"
+            },
+            legend: {
+                onHover: function(e) {
+                    e.target.style.cursor = "pointer";
+                }
+            },
+            hover: {
+                onHover: function(e){
+                    var point = this.getElementAtEvent(e);
+                    if (point.length) e.target.style.cursor = "pointer";
+                    else e.target.style.cursor = "default"
+                }
+            },
+            scales: {
+                yAxes: [{
+                    display: true,
+                    ticks: {
+                        suggestedMin: 20,    // minimum will be 0, unless there is a lower value.
+                        // OR //
+                        suggestedMax: 35,
+                        
+                    }
+                }]
+            }
+        }
+    });
+
+    const getData = async () => {
+        await fetch("/data_from_rest")
+            .then(async response => {
+                var raw = await response.json()
+
+                var labels = raw.map((n) => n[0])
+                var sensor1_temperature = raw.map((n) => n[1])
+                var sensor2_temperature = raw.map((n) => n[2])
+
+                var chart_data = {
+                    labels: labels,
+                    datasets: [{
+                        label: "S1 Temperature",
+                        data: sensor1_temperature,
+                        backgroundColor: "#3399ff",
+                        borderColor: "#3399ff",
+                        fill: false,
+                        borderWidth: 1.2,
+                        pointRadius: 0,
+                    },
+                    {
+                        label: "S2 Temperature",
+                        data: sensor2_temperature,
+                        backgroundColor: "#000066",
+                        borderColor: "#000066",
+                        fill: false,
+                        borderWidth: 1,
+                        pointRadius: 0,
+                    }]
+                }
+
+                chart.data = chart_data
+                chart.options.animation = {duration: 0}
+                chart.update()
+
+                // chart.data.labels.push()
+            })  // converter para json
+            .catch(err => console.log('Erro de solicitação', err));
+
+        
+    }
+
+    setInterval(getData, 2000);
+
+</script>
+
+{% endblock %}

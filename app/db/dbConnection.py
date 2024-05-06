@@ -2,6 +2,8 @@ import yaml
 import mariadb
 import sys
 
+import logging 
+
 class dbConnection:
     def __init__(self):
         with open('./config/config.yaml', 'r') as file:
@@ -14,8 +16,12 @@ class dbConnection:
         self.port = config["DB"]["PORT"]
         self.db_name = config["DB"]["DBNAME"]
 
-    def connect(self):
+        self.logger = logging.getLogger("root")
+
         
+
+
+    def connect(self):
         try:
             self.conn = mariadb.connect(user=self.user, 
                                         password=self.password, 
@@ -27,13 +33,12 @@ class dbConnection:
             self.cur = self.conn.cursor()
 
         except mariadb.Error as e:
-            print(f"Error connecting to MariaDB Plataform: {e}")
+            self.logger.debug(f"Error connecting to MariaDB Plataform: {e}")
             sys.exit(1)
 
         else:
-            print("Connection estabilished.")
+            self.logger.debug("Connection estabilished.")
     
-
     def query(self, query_command, data=None):
         try:
             self.cur.execute(query_command, data)

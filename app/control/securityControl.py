@@ -7,6 +7,8 @@ from security.ExternalComunicationSystem import ExternalComunicationSystem
 from utils.statusCode import statusCode
 from utils.piGPIOSystem import piGPIOSystem
 
+import logging
+
 import RPi.GPIO as GPIO
 
 OK = 1
@@ -18,6 +20,8 @@ class securityControl:
     def __init__(self):
         with open('./config/config.yaml', 'r') as file:
             config = yaml.safe_load(file)
+
+        self.log = logging.getLogger("root")
 
         self.debug = config["SERVER"]["DEBUG"]
 
@@ -69,15 +73,15 @@ class securityControl:
                     message = message_queue.pop()
                     if(message[0] == WARNING):
                         if(self.debug):
-                            print("[ALERT] - Send external WARNING alert")
+                            self.log.info("[ALERT] - Send external WARNING alert")
                         self.comunication.warningMessage(message[1])
                     if(message[0] == DANGER):
                         if(self.debug):
-                            print("[ALERT] - Send external DANGER alert")
+                            self.log.info("[ALERT] - Send external DANGER alert")
                         self.comunication.dangerMessage(message[1])
                     if(message[0] == OK):
                         if(self.debug):
-                            print("[ALERT] - Send external DANGER alert")
+                            self.log.info("[ALERT] - Send external DANGER alert")
                         self.comunication.okMessage(message[1])
                     time.sleep(1)
                 
@@ -90,11 +94,11 @@ class securityControl:
 
             message_queue = []
 
-            ## LOOP FOR ALL CHECKED SENSORS
+            ## LOOP FOR ALL CHECKED SENSORS AND POPULATE message_queue
             for id, (sensor_name, temp, hum, status_code) in enumerate(result):
                 if status_code == statusCode.OK_WAINTING:
                     if(self.debug):
-                        print(f"[CODE {status_code}] {sensor_name} - Waiting for more data")
+                        self.log.info(f"[CODE {status_code}] {sensor_name} - Waiting for more data")
                     continue
 
                 if status_code == statusCode.TEMPERATURE_SENSOR_ERROR:
@@ -102,7 +106,7 @@ class securityControl:
                     self.sensor_alert_list[id] = 1
                     message_queue.append([WARNING, self.sensor_problem_message])
                     if(self.debug):
-                        print(f"[CODE {status_code}] {sensor_name} - Temperature Sensor Error. Data can't be readed.")
+                        self.log.info(f"[CODE {status_code}] {sensor_name} - Temperature Sensor Error. Data can't be readed.")
                     continue
                 else:
                     self.sensor_alert_list[id] = 0
@@ -112,14 +116,14 @@ class securityControl:
                     self.temp_warning_list[id] = 1
                     message_queue.append([WARNING, self.temperature_warning_message + f"\n\nSensor: {sensor_name} \nTemperature: {temp}°C, Humidity: {hum}"])
                     if(self.debug):
-                        print(f"[CODE {status_code}] {sensor_name} - WARNING! Temperature is HIGH. {temp} degrees")
+                        self.log.info(f"[CODE {status_code}] {sensor_name} - WARNING! Temperature is HIGH. {temp} degrees")
 
                 elif status_code == statusCode.DANGER_TEMPERATURE:
                     self.problem_flag = True
                     self.temp_danger_list[id] = 1
                     message_queue.append([DANGER, self.temperature_danger_message + f"\n\nSensor: {sensor_name} \nTemperature: {temp}°C, Humidity: {hum} "])
                     if(self.debug):
-                        print(f"[CODE {status_code}] {sensor_name} - DANGER! Temperature is VERY HIGH. {temp} degrees")
+                        self.log.info(f"[CODE {status_code}] {sensor_name} - DANGER! Temperature is VERY HIGH. {temp} degrees")
 
                 elif status_code == statusCode.SENSOR_OK:
                     
@@ -128,8 +132,10 @@ class securityControl:
                     self.temp_danger_list[id] = 0
         
                     if(self.debug):
-                        print(f"[CODE {status_code}] {sensor_name} - Sensor is OK!")
+                        self.log.info(f"[CODE {status_code}] {sensor_name} - Sensor is OK!")
 
+            ### ------------------- TURNING OF LED STATUS AND SET TO SEND MESSAGE ALERT ----------------------
+                        
             if(sum(self.sensor_alert_list)):
                 self.send_alert_message = True
                 self.gpio_command.turnOnTempSensorWarning()
@@ -151,9 +157,8 @@ class securityControl:
             ## TODO
             ## VOLTAGE SENSOR CHECK
             # if result == statusCode.VOLTAGE_SENSOR_ERROR:
-            #     print(f"[CODE {statusCode.VOLTAGE_SENSOR_ERROR}] Voltage Sensor Error. Data can't be readed.")
+            #     self.log.info((f"[CODE {statusCode.VOLTAGE_SENSOR_ERROR}] Voltage Sensor Error. Data can't be readed.")
 
-            
             if(not sum(self.sensor_alert_list) and not sum(self.temp_warning_list) and not sum(self.temp_danger_list)):
                 if self.problem_flag:
                         message_queue.append([OK, self.ok_message])
@@ -169,3 +174,5 @@ class securityControl:
             # f"We have a problem with our sensors:\n Sensor number {[i+1 for i, x in enumerate(self.sensor_alert_list) if x]}"
             
             time.sleep(10)
+
+            ## -----------------------------------------------------------------------------------------------

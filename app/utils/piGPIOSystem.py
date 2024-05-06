@@ -1,11 +1,14 @@
 import yaml 
 import RPi.GPIO as GPIO
+import logging
 
 ## THIS CLASS WILL MANAGE ALL SIGNAL THAT WILL BE USED FOR EXTERNAL COMPONENTS
 ## EX: ALARM, BACKUP AC (Air Conditioning), STATUS LEDS, ... 
 class piGPIOSystem:
     def __init__(self):
         GPIO.setwarnings(False)
+
+        self.log = logging.getLogger("root")
 
         with open('./config/config.yaml', 'r') as file:
             config = yaml.safe_load(file)
@@ -22,11 +25,11 @@ class piGPIOSystem:
 
     def turnOnGPIO(self, gpio_type):
         if(gpio_type not in self.gpios.keys()):
-            print("GPIO Not configured. Add it to the config file")
+            self.log.info("GPIO Not configured. Add it to the config file")
             return False
         
         if (not self.gpios_control[gpio_type]):
-            print(f"TURNING ON GPIO {self.gpios[gpio_type]}")
+            self.log.info(f"TURNING ON GPIO {self.gpios[gpio_type]}")
             GPIO.output(self.gpios[gpio_type], GPIO.HIGH)
             self.gpios_control[gpio_type] = 1
         
@@ -34,7 +37,7 @@ class piGPIOSystem:
     
     def turnOffGPIO(self, gpio_type):
         if(gpio_type not in self.gpios.keys()):
-            print("GPIO Not configured. Add it to the config file")
+            self.log.info("GPIO Not configured. Add it to the config file")
             return False
         
         if (self.gpios_control[gpio_type]):

@@ -17,13 +17,13 @@ import Adafruit_DHT
 
 #         if (self.metric):
 #             if self.debug:
-#                 print(f"[TEMPERATURE]{self.name} Temperature(C):{temp_c} Humidity:{humidity}")
+#                 self.log.info(f"[TEMPERATURE]{self.name} Temperature(C):{temp_c} Humidity:{humidity}")
 
 #             result['temperature'] = temp_c
 
 #         else:
 #             if self.debug:
-#                 print(temp_f)
+#                 self.log.info(temp_f)
 
 #             temp_f = format(temp_c * 9.0 / 5.0 + 32.0, ".2f")
 #             result['temperature'] = temp_f
@@ -38,6 +38,8 @@ import adafruit_dht
 import time
 
 import utils.ACBoard as ACBoard
+
+import logging
 
 STATUS_OK = 1
 STATUS_SENSOR_ERR = -1
@@ -54,6 +56,8 @@ class controlDHT22:
 
         self.dhtDevice = adafruit_dht.DHT22(board_port)
 
+        self.log = logging.getLogger("root")
+
     def run(self):
         result = {}
         
@@ -67,25 +71,25 @@ class controlDHT22:
 
                 if (self.metric):
                     if self.debug:
-                        print(f"[TEMPERATURE]{self.name} Temperature(C):{temp_c} Humidity:{humidity}")
+                        self.log.info(f"[TEMPERATURE]{self.name} Temperature(C):{temp_c} Humidity:{humidity}")
 
                     result['temperature'] = temp_c
 
                 else:
                     if self.debug:
-                        print(temp_f)
+                        self.log.info(temp_f)
 
                     temp_f = format(temp_c * 9.0 / 5.0 + 32.0, ".2f")
                     result['temperature'] = temp_f
 
                 result["name"] = self.name
                 if self.debug:
-                    print(result)
+                    self.log.info(result)
                 
                 break
             except RuntimeError as error:
                 if self.debug:
-                    print(error)
+                    self.log.info(error)
                 
                 if(str(error) == "DHT sensor not found, check wiring"):
                     result['temperature'] = None
