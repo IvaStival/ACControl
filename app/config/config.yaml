@@ -64,3 +64,8 @@ TELEGRAM:
   SENSOR_PROBLEM_MESSAGE: "We have some problems with one or more sensors."
   TEMPERATURE_WARNING_MESSAGE: "Maybe you must check the server room. The temperature is rising."
   TEMPERATURE_DANGER_MESSAGE: "Oh my GOD, Run!!! The temperature is high!!!"
+
+LOG:
+  LEVEL: 20
+  # 10 - DEBUG
+  # 20 - INFO

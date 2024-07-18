@@ -17,8 +17,6 @@ class botControl:
             self.bot = telebot.TeleBot(token)
             self.bot.SESSION_TIME_TO_LIVE = 5 * 60
 
-            self.db_command = dbCommands()
-
             @self.bot.message_handler(commands=["start", "hello"])
             def send_welcome(message):
                 self.bot.reply_to(message, "Hi, how are you going?")
@@ -26,27 +24,27 @@ class botControl:
             @self.bot.message_handler(commands=["status"])
             def send_status(message):
                 result = self.db_command.getLast(table='sensors')
+                
                 self.log.info("Info Requested")
                 for (id, s1, t1, h1, s2, t2, h2, create_at) in result:
                     self.bot.reply_to(message, f"Temperature\n🌡️{s1} - {t1}°C\n🌡️{s2} - {t2}°C\n\nHumidity\n💧{s1} - {h1}\n💧{s2} - {h2}")
 
-    def check_connection(self):
-        if not self.bot.get_me():
-            self.log.info("Bot disconnected. Attempting to reconnect...")
-            self.bot.polling()
-            self.log.info("Reconnected successfully.")
-        elif not self.started:
-            
+    def connect(self):
+        # if not self.bot.get_me():
+        #     self.log.info("Bot disconnected. Attempting to reconnect...")
+        #     self.bot.polling()
+        #     self.log.info("Reconnected successfully.")
+        # elif not self.started:
+            self.db_command = dbCommands()
             self.log.info("Connecting Bot...")
             self.bot.polling()
-            self.started = True
-            self.log.info("Bot Connected...")
+            # self.started = True
+            # self.log.info("Bot Connected...")
 
     def start_poling(self):
         while True:
             try:
-                self.check_connection()
-                time.sleep(60) # Chech each 1min
-            except:
-                self.log.info("Error on starting bot")
+                self.connect()
+            except Exception as e:
+                self.log.info(f"Bot Error: {e}")
         
